@@ -1,18 +1,21 @@
-require('dotenv').config();
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const Profile = require('./models/profile.js');
+require('dotenv').config(); // Load environment variables from a .env file into process.env
+const express = require('express'); // Import Express, a web framework for Node.js
+const mongoose = require('mongoose'); // Import Mongoose, an ODM (Object Data Modeling) library for MongoDB
+const cors = require('cors'); // Import CORS middleware to enable Cross-Origin Resource Sharing
+const Profile = require('./models/profile.js'); // Import the Profile model
 
-const app = express();
-app.use(express.json());
-app.use(cors());
+const app = express(); // Initialize an Express application
+app.use(express.json()); // Middleware to parse incoming requests with JSON payloads
+app.use(cors()); // Middleware to allow cross-origin requests
 
+// Connect to MongoDB using Mongoose
 mongoose.connect(process.env.URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
+    useNewUrlParser: true, // Use the new URL string parser
+    useUnifiedTopology: true, // Use the new Server Discover and Monitoring engine
 });
 
+// Example of dummy profile data (commented out)
+// This can be used for seeding the database with initial data
 // const dummyProfiles = [
 //     { name: 'Aarav Gupta', age: 28, location: 'Delhi', profession: 'Software Engineer' },
 //     { name: 'Riya Sharma', age: 25, location: 'Mumbai', profession: 'Marketing Specialist' },
@@ -26,31 +29,34 @@ mongoose.connect(process.env.URI, {
 //     { name: 'Nidhi Chauhan', age: 28, location: 'Lucknow', profession: 'DevOps Engineer' },
 // ];
 
-// Insert dummy data into the database (can be done in a script or via API calls)
+// Code to insert dummy data into the database (commented out)
+// This can be done in a script or through API calls
 // dummyProfiles.forEach(async (profile) => {
 //     const newProfile = new Profile(profile);
 //     await newProfile.save();
 // });
 
+const PORT = process.env.PORT || 8000; // Define the port for the server to listen on
 
-const PORT = process.env.PORT || 8000;
-
+// API endpoint to create a new profile
 app.post('/api/profiles', async (req, res) => {
-    const { name, age, location, profession } = req.body;
+    const { name, age, location, profession } = req.body; // Destructure profile data from the request body
     try {
-        const profile = new Profile({ name, age, location, profession });
-        await profile.save();
-        res.status(201).json(profile);
+        const profile = new Profile({ name, age, location, profession }); // Create a new Profile instance with the provided data
+        await profile.save(); // Save the profile to the database
+        res.status(201).json(profile); // Respond with the created profile and a 201 status code
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        res.status(400).json({ error: error.message }); // Respond with an error message if the operation fails
     }
 });
 
+// API endpoint to get all profiles
 app.get('/api/profiles', async (req, res) => {
-    const profiles = await Profile.find().sort({ location: 1 });
-    res.json(profiles);
+    const profiles = await Profile.find().sort({ location: 1 }); // Fetch all profiles from the database, sorted by location
+    res.json(profiles); // Respond with the profiles in JSON format
 });
 
+// Start the server and listen on the specified port
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`Server running on port ${PORT}`); // Log a message when the server starts successfully
 });
