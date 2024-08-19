@@ -76,7 +76,7 @@ function App() {
                         </div>
                       </form>
                     )}
-                  </Popup>
+                </Popup>
             </header>
             <section className='table-section'>
               <table className='table'>
